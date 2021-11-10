@@ -1,0 +1,106 @@
+---
+title: "Coding Exercise 7_Question"
+---
+
+## **Coding Exercise 7 - Parsing Dates**
+
+### **Question 1: How much time has passed?**
+
+When doing Data Science projects, we might come accross data in Date format that refers to a certain point in time. They often come in very different formats - some may only have the date, some may have the month and year, and some even has the exact time (hours, minutes, seconds) and timezone.
+
+Clue: You can use any libraries to help you.
+
+In this exercise, explore some ways how to load a string that tells us date so we can calculate the difference between the two input dates.
+
+You will be tasked to write a function called `duration_count` which takes in 2 inputs. Both of the inputs are string that tells you the date. The output of your function should be the duration between the 2 inputs, in seconds.
+
+The input format will be: "Date Month Year Hour:Minute:Second Timezone_Information"
+
+#### **Example 1:**
+
+-   Input 1 = 'Mon 23 Jan 2017 14:41:10 -0800'
+
+-   Input 2 = 'Mon 23 Jan 2017 14:41:10 -0200'
+
+Both inputs refer to the same date and same time, but in different timezones. Therefore, the duration between these two dates are: 6 hours. But, as we want the answer to be in seconds, the expected answer is 21600 seconds. (Just output 21600, you don't have to write seconds).
+
+#### **Example 2:**
+
+-   Input 1 = 'Mon 23 Dec 2017 14:00:00 -0700'
+
+-   Input 2 = 'Tue 24 Dec 2017 14:00:00 -0700'
+
+Both inputs refer to the same time and are located in the same time zone. However, they are 1 day apart. Therefore, the duration between them are: 1 day = 1 x 24 x 3600 = 86400 seconds.
+
+```{r}
+library(tidyverse)
+library(lubridate)
+library(tidyr)
+duration_count <- function(input_1, input_2) {
+  df <- data.frame(matrix(ncol = 1, nrow = 2))
+  x <- c("data")
+  colnames(df) <- x
+  df[1,1] <- input_1
+  df[2,1] <- input_2
+  df <- separate(df, col = data, into = c("day","date","month","year","time","timezone"), sep = " ")
+  df <- separate(df, col = time, into = c("hour","min","sec"), sep = ":")
+  df <- df %>% mutate(date = as.numeric(date),
+                      year = as.numeric(year),
+                      hour = as.numeric(hour),
+                      min = as.numeric(min),
+                      sec = as.numeric(sec),
+                      timezone = as.numeric(timezone))
+  df <- df[order(-df$date),]
+  gap_day = df$date[1] - df$date[2]
+  gap_hour = df$hour[1] - df$hour[2]
+  gap_min = df$min[1] - df$min[2]
+  gap_sec = df$sec[1] - df$sec[2]
+  gap_zone = df$timezone[1] - df$timezone[2]
+  Total_duration = (gap_day * 24 * 3600) + (gap_hour * 3600) + (gap_min * 60) + gap_sec - ((gap_zone/100) * 3600)
+  Total_duration
+}
+duration_count(input_1 = 'Mon 23 Jan 2017 14:41:10 -0800', input_2 = 'Mon 23 Jan 2017 14:41:10 -0200')
+```
+```{r}
+
+duration_count(input_1 = "Mon 23 Dec 2017 14:00:00 -0700",input_2 = "Tue 24 Dec 2017 14:00:00 -0700")
+
+```
+
+### **Question 2: What Day is It?**
+
+In time series data, we usually want to know what day is it. It usually isn't enough to just know the 'number' of date, especially when days matter a lot to our data (example: customer behavior analysis). In a customer behavior analysis scenario, we might find different behaviors in Monday - Friday vs Saturday - Sunday (weekend). Knowing the days also allow us to map some seasonality.
+
+Given 3 input: date first, then month, and finally year. Can you tell us what day is it? You can use any library that you want. Your function name should be named `find_day`.
+
+#### **Example 1:**
+
+`find_day(11,10,2021)` should give output "Monday", as 11 October 2021 is a Monday.
+
+#### **Example 2:**
+
+`find_day(17,8,1945)` should give output "Friday", as 17 August 1945 is a Friday.
+
+```{r}
+find_day <- function(day, month, year){
+  df <- data.frame(matrix(nrow = 1, ncol = 3))
+  x <- c("year","month","day")
+  colnames(df) <- x
+  df[1,1] <- year
+  df[1,2] <- month
+  df[1,3] <- day
+  df <- df %>% 
+    mutate(date_ = paste(year,month,day))
+  df$ndate <- as.Date(df$date_, format = "%Y%m%d")
+  df$day_ <- weekdays(df$ndate)
+  df$day_[1]
+}
+
+find_day(11,10,2021)
+
+```
+```{r}
+
+find_day(17,8,1945)
+
+```

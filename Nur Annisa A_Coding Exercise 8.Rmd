@@ -1,0 +1,127 @@
+---
+title: "Coding Exercise 8_Question"
+---
+
+## **Coding Exercise 8**
+
+#### **For both questions, you can import any library.**
+
+### **Question 1: Only One Extra Curricular Activity**
+
+Given a list of students who joined Science Club, Sports Club, and History Club. Your output should be telling us the names of students who only joins 1 club. Your function name will be `one_activity_finder`.
+
+#### **Example 1:**
+
+-   Science = `c('Peter', 'Tony', 'Rhodey', 'Bruce')`
+
+-   Sports = `c('Steve, 'Peter', 'Thor', 'Natasha', 'Clint', 'Bruce')`
+
+-   History = `c('Steve', 'Thor', 'Natasha', 'Nick)`
+
+As we can see, a few students joined more than 1 club. The only students who only joined 1 club activities are Tony, Rhodey, Clint, and Nick.
+
+`one_activity_finder(Science, Sports, History)` will give the output:
+
+'Tony', 'Rhodey', 'Clint', 'Nick'
+
+#### **Example 2:**
+
+-   Science = `c('Bruce', 'Victor', 'Barry', 'Lex', 'Hal')`
+
+-   Sports = `c('Bruce', 'Victor', 'Barry', 'Clark', 'Diana')`
+
+-   History = `c('Diana', 'Arthur', 'Bruce')`
+
+The students who only join 1 club are: 'Lex', 'Hal', 'Clark', 'Arthur'
+
+```{r}
+one_activity_finder <- function(Science, Sports, History){
+  intersect_ <- c(intersect(Science, Sports), intersect(Sports, Science), 
+       intersect(Sports, History), intersect(History, Sports), 
+       intersect(Science, History), intersect(History, Science))
+  intersect_ 
+  unique_name <- intersect_[!duplicated(intersect_)]
+  unique_name
+  studentname <- c(setdiff(Science, unique_name), 
+                   setdiff(Sports, unique_name), 
+                   setdiff(History, unique_name))
+  
+  paste("The students who only join 1 club are:", paste(studentname, collapse = ", "))
+}
+
+## Example 1
+one_activity_finder(Science=c('Peter', 'Tony', 'Rhodey', 'Bruce'), 
+                    Sports=c('Steve', 'Peter', 'Thor', 'Natasha', 'Clint', 'Bruce'), 
+                    History = c('Steve', 'Thor', 'Natasha', 'Nick'))
+## Example 2
+one_activity_finder(Science = c('Bruce', 'Victor', 'Barry', 'Lex', 'Hal'), 
+                    Sports = c('Bruce', 'Victor', 'Barry', 'Clark', 'Diana'),
+                    History = c('Diana', 'Arthur', 'Bruce'))
+
+```
+
+### **Question 2: Three Most Common Letter**
+
+Given one string. Print out the 3 most common letter in this order:
+
+-   Print the most common letter first
+
+-   Then, move to the second most common letter
+
+-   If there is a tie, refer to the alphabetical order and choose the first one to appear first
+
+Your function name is `top_letter`
+
+#### **Example 1:**
+
+Input = 'ddeeeeffgh'
+
+Output = 'edf'
+
+This is because 'e' appears the most, then the second place is a 'tie' between 'd' and 'f'. We should look to the alphabetical order, and since 'd' appears before 'f', we print 'd' first then 'f'.
+
+#### **Example 2:**
+
+Input = 'ddeeeeffgghh'
+
+Output = 'edf'
+
+
+This is because 'e' appears the most, then the second place is a 'tie' between 'd', 'f', 'g', and 'h'. We should look to the alphabetical order, and since 'd' appears before 'f', we print 'd' then 'f'.
+
+Wait, why don't we print 'g' and 'h' too? Because we only want TOP 3 LETTERS. This is the challenge.
+
+#### **Example 3:**
+
+Input = 'aabbbbcdefg'
+
+Output = 'bac'
+
+This is because 'b' appears the most, then the second most common letter is 'a', and the third place is a tie between 'c', 'd', 'e', 'f', 'g'. We only choose 'c', because its the earliest letter in the alphabet, and since we only want 3 letters, we only can choose 'c'.
+
+```{r}
+top_letter <- function(input_string){
+  letter <- unlist(strsplit(input_string, ""))
+  letter_vec <- c(letter)
+  df <- data.frame(letter_vec)
+  df <- df %>% 
+    count(letter_vec, sort = TRUE)
+  df
+  df$letter_vec[1]
+  df$letter_vec[2]
+  df$letter_vec[3]
+  output <- paste(df$letter_vec[1],df$letter_vec[2],df$letter_vec[3],sep = "")
+  output
+}
+
+## Example 1
+top_letter(input_string = 'ddeeeeffgh')
+
+## Example 2
+top_letter(input_string = 'ddeeeeffgghh')
+
+## Example 3
+top_letter(input_string = 'aabbbbcdefg')
+
+```
+
